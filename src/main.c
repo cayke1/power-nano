@@ -10,6 +10,12 @@ void disable_raw_mode()
     tcsetattr(STDIN_FILENO, TCSAFLUSH, &original_termios);
 }
 
+void clearScreen()
+{
+    write(STDOUT_FILENO, "\x1b[2J", 4);
+    write(STDOUT_FILENO, "\x1b[H", 3);
+}
+
 void enter_raw_mode()
 {
     struct termios raw;
@@ -26,16 +32,18 @@ void enter_raw_mode()
     raw.c_cc[VTIME] = 0;
 
     tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
+
+    clearScreen();
 }
 
 int main()
 {
     enter_raw_mode();
-
     char c;
     while (read(STDIN_FILENO, &c, 1) == 1)
     {
-        if (c == 'q')
+        clearScreen();
+        if (c == 17)
             break;
     }
     return 0;
