@@ -1,6 +1,7 @@
 #include "terminal.h"
 #include "input.h"
 #include "cursor.h"
+#include "buffer.h"
 
 int main(void)
 {
@@ -9,13 +10,16 @@ int main(void)
     Cursor cursor;
     cursor_init(&cursor);
 
+    Buffer buffer;
+    buffer_init(&buffer);
+
     int c;
     while ((c = read_key()) != 0)
     {
-        clear_screen();
-
-        if (c == CTRL_Q)
+        if (c == CTRL_Q) {
+            clear_screen();
             break;
+        }
 
         switch (c)
         {
@@ -31,10 +35,26 @@ int main(void)
         case ARROW_RIGHT:
             cursor_move_right(&cursor);
             break;
-        case CTRL_Q:
+        case BACKSPACE:
+            buffer_backspace(&buffer, &cursor.x, &cursor.y);
+            break;
+        case DELETE:
+            buffer_delete_char(&buffer, cursor.x, cursor.y);
+            break;
+        case ENTER:
+            buffer_newline(&buffer, &cursor.x, &cursor.y);
+            break;
+        default:
+            // Insert printable characters
+            if (c >= 32 && c < 127)
+            {
+                buffer_insert_char(&buffer, cursor.x, cursor.y, c);
+                cursor.x++;
+            }
             break;
         }
 
+        buffer_render(&buffer);
         cursor_update_position(&cursor);
     }
 
