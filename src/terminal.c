@@ -2,6 +2,7 @@
 #include <termios.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <string.h>
 
 struct termios original_termios;
 
@@ -34,4 +35,9 @@ void enter_raw_mode(void)
     tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
 
     clear_screen();
+}
+
+void write_string(const char *s)
+{
+    write(STDOUT_FILENO, s, strlen(s));
 }

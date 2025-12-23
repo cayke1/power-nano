@@ -4,5 +4,6 @@
 void enter_raw_mode(void);
 void disable_raw_mode(void);
 void clear_screen(void);
+void write_string(const char *s);
 
 #endif
